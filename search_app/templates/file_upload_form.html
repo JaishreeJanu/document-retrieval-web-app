@@ -1,0 +1,28 @@
+<html>
+    <head>
+        <title>
+            Search text documents
+        </title>
+    </head>
+    <body>
+
+        <div>
+                {% block content %}
+                <form method="post" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  {{ form.as_p }}
+                  <button type="submit">Upload</button>
+                </form>
+              
+              {% endblock %}
+        </div>
+
+        <div>
+            <b>Retrieve information from a set of documents</b>
+        </div>
+        <div>
+            <label>Enter search terms</label>
+            <input type="text">
+        </div>
+    </body>
+</html>
