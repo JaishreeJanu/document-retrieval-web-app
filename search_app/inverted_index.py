@@ -10,13 +10,15 @@ nltk.download('punkt')
 from nltk.stem import PorterStemmer
 from collections import defaultdict
 import csv
+import json
+from operator import itemgetter
 
 stop_words = set(stopwords.words('english'))
 stemmer = PorterStemmer()
 
-path = os.getcwd() + '/documents/'
-files = os.listdir(path)
-ivdict = {}
+#path = os.getcwd() + '/documents/'
+data_path = os.getcwd() + '/search_app/index/'
+#files = os.listdir(path)
 
 class Inverted():
 
@@ -51,18 +53,19 @@ class Inverted():
         text_list = [i for i in tokens if not i in stop_words]
         for word in text_list:
             stemmed_word = (stemmer.stem(word))
-            stemmed.append(stemmed_word)	
+            stemmed.append(stemmed_word)
         return stemmed
 
 
     def create_index(text,docID):
         '''
-        Creates Inverted Index in Data structure called dictionary and then save it into a file.
+        Creates Inverted Index in Data structure called dictionary and then save it into a json file.
         Term is index and list of lists is stored as values. Each list item in list is combination of docID and frequency of term in docID.
         Parameters:
             text (str) : text to be indexed in dictionary
             docID (str) : Document Name
         '''
+        ivdict = {}
         for term in text:
             if term in ivdict:
                 flag=0
@@ -72,15 +75,15 @@ class Inverted():
                         flag=1
                         break;
                 if flag == 0:
-                    ivdict[term].append([docID,1])			
+                    ivdict[term].append([docID,1])
             else:
                 myList = [[docID,1]]
                 ivdict.update({term : myList })
         
-        iv = csv.writer(open("dict.csv", "w"))
-        for key, val in ivdict.items():
-            #print([key,val])
-            iv.writerow([key, val])
+        js = json.dumps(ivdict)
+        iv = open(data_path+"dict.json","w")
+        iv.write(js)
+        iv.close()
         return
 
     def search(query):
@@ -88,41 +91,23 @@ class Inverted():
         Returns list of documents containing the terms present in query
         
         Parameters:
-            query (str) : Query entered by user 
+            query (str) : Query received from form input
         Returns:
             A list of documents containing query terms
         '''
-        query = list(query.split(" "))
-        query1 = query[0]
-        query2 = query[1]
+        query_list = list(query.split(" "))
         result = []
-        if query1 not in ivdict or query2 not in ivdict:	
-            print("No query resuts available, Please rebuild your query")
-            return
-        else:
-            i=0 
-            j=0
-            query1_list = ivdict[query1]
-            query2_list = ivdict[query2]
-            query1_list.sort()
-            query2_list.sort()
-            while i<(len(query1_list)) and j<(len(query2_list)):
-                a = query1_list[i][0]
-                b = query2_list[j][0]
-                if a == b:
-                    result.append(a)
-                    i+=1
-                    j+=1
-                else: 
-                    if a > b:
-                        j+=1
-                    else:
-                        i+=1
-    #	print("The search results for AND Boolean query:::",result)
+        with open(data_path+"dict.json","rb") as iv:
+            ivdict = json.load(iv)
+        for query in query_list:
+            this_list = ivdict[query]
+            this_list = sorted(this_list,key=itemgetter(1), reverse=True)
+            this_list = this_list[0:5]
+            doc_list = [list[0] for list in this_list]
+            for list_item in doc_list:
+                if list_item not in result:
+                    result.append({"name":list_item})
+        
         return result
-
-    #print(ivdict)
-    #query = input("Enter your query")
-    #print(search(query))	
 
 

@@ -1,8 +1,12 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from .forms import DocumentForm
 from .inverted_index import Inverted as iv
 import os
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
+import json
+from django.template import Context, Template
 
 # Create your views here.
 def model_form_upload(request):
@@ -10,15 +14,29 @@ def model_form_upload(request):
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('model_form_upload')
-    else:
-        form = DocumentForm()
+        # Whenever a new document is being added, inverted index module is called
         path = os.getcwd() + '/documents/'
         files = os.listdir(path)
         for filename in files:
+            print(filename)
             text = iv.readfile(path, filename)
-            text = iv.preprocess(text) 
+            text = iv.preprocess(text)
             iv.create_index(text, filename)
+        return redirect('model_form_upload')
+    else:
+        form = DocumentForm()
     return render(request, 'file_upload_form.html', {
         'form': form
     })
+
+@csrf_exempt
+@api_view(['POST'])
+def search_query(request):
+    #data = json.loads(str(request))
+    data = request.data
+    result = iv.search(data["term"])
+    print(result)
+    template = Template('Results for the query are {{ documents }}')
+    context = Context({"documents":result})
+    template.render(context)
+    return HttpResponse("helloe")
