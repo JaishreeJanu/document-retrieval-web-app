@@ -5,6 +5,11 @@ FINDME lets you:
 - Add documents in your local folder.
 - Search documents given query terms.
 
+### Technical skills used
+- Django web framework
+- nltk: Natural language toolkit
+- HTML, javascript
+
 ### Component 1: Create index
 
 **Inverted index** is created on all documents. Inverted index is a database index storing mapping from words to location or set of documents.
@@ -20,6 +25,16 @@ For every word, there is list of lists. Each list item stores **document name** 
 ### Component 2: Return search results
 
 - Take the query terms from form, preprocess query and return most relevant document names based on the frequency of the term.
+
+### Development setup
+
+```
+cd <project directory>
+source virtual_env/bin/activate
+python3 manage.py runserver
+```
+Application server running at : http://localhost:8000/search
+
 
 
 
