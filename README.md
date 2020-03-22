@@ -1,9 +1,9 @@
-## FINDME: A web application for searching across set of documents
+## SEARCHIT: A web application for searching from set of documents
 
 This application is the result of bringing information retrieval and web app at one place.
-FINDME lets you:
+SEARCHIT lets you:
 - Add documents in your local folder.
-- Search documents given query terms.
+- Search documents for query terms.
 
 ### Technical skills used
 - Django web framework
