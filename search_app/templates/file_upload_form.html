@@ -20,9 +20,36 @@
         <div>
             <b>Retrieve information from a set of documents</b>
         </div>
-        <div>
+        <form id="query_form">
             <label>Enter search terms</label>
-            <input type="text">
-        </div>
+            <input type="text" id="search" name="query" />
+            <input type="submit" value="submit" />
+        </form>
+        {% csrf_token %}
+
+
+        <p>The query results are:</p>
+        <ul>
+            {% for result in results %}
+            <li>{{  result }}</li>
+            {% endfor %}
+        </ul>
+
+        <script>
+        document.getElementById('query_form').onsubmit=function(e){
+            fetch('query/',{
+                method:'POST',
+                body:JSON.stringify({
+                    'term': document.getElementById('search').value
+                }),
+                headers:{
+                'Content-Type':'application/json'
+            }
+            })
+            .then(function(response){
+                return response.json();
+            })
+        }
+        </script>
     </body>
 </html>

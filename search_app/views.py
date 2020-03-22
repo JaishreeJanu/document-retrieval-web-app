@@ -32,11 +32,12 @@ def model_form_upload(request):
 @csrf_exempt
 @api_view(['POST'])
 def search_query(request):
-    #data = json.loads(str(request))
     data = request.data
-    result = iv.search(data["term"])
-    print(result)
-    template = Template('Results for the query are {{ documents }}')
-    context = Context({"documents":result})
-    template.render(context)
-    return HttpResponse("helloe")
+    query = iv.preprocess(data["term"]) #preprocess query
+    results = iv.search(query)
+    if not results:
+        print("No document found for your query")
+        return redirect('model_form_upload')
+    else:
+        print(results)
+        return render(request,'file_upload_form.html',{"results": results})

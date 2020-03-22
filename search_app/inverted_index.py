@@ -19,6 +19,7 @@ stemmer = PorterStemmer()
 #path = os.getcwd() + '/documents/'
 data_path = os.getcwd() + '/search_app/index/'
 #files = os.listdir(path)
+ivdict = {}
 
 class Inverted():
 
@@ -65,7 +66,6 @@ class Inverted():
             text (str) : text to be indexed in dictionary
             docID (str) : Document Name
         '''
-        ivdict = {}
         for term in text:
             if term in ivdict:
                 flag=0
@@ -95,18 +95,20 @@ class Inverted():
         Returns:
             A list of documents containing query terms
         '''
-        query_list = list(query.split(" "))
+        #query_list = list(query.split(" "))
+        query_list = query
         result = []
         with open(data_path+"dict.json","rb") as iv:
             ivdict = json.load(iv)
         for query in query_list:
-            this_list = ivdict[query]
-            this_list = sorted(this_list,key=itemgetter(1), reverse=True)
-            this_list = this_list[0:5]
-            doc_list = [list[0] for list in this_list]
-            for list_item in doc_list:
-                if list_item not in result:
-                    result.append({"name":list_item})
+            if query in ivdict:
+                this_list = ivdict[query]
+                this_list = sorted(this_list,key=itemgetter(1), reverse=True)
+                this_list = this_list[0:5]
+                doc_list = [list[0] for list in this_list]
+                for list_item in doc_list:
+                    if list_item not in result:
+                        result.append(list_item)
         
         return result
 
