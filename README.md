@@ -1,9 +1,6 @@
-## SEARCHIT: A web application for searching from set of documents
+## SEARCHIT: A web application for information retrieval from set of documents
 
-This application is the result of bringing information retrieval and web app at one place.
-SEARCHIT lets you:
-- Add documents in your local folder.
-- Search documents for query terms.
+**Motivation**: This application has been inspired by search engines which enable us to retrieve information from large set of documents. This application lets you add documents in local folder, take query terms as input and return document sets for the query terms. This application is the result of bringing information retrieval and web app at one place.
 
 ### Technical skills used
 - Django web framework
