@@ -1,6 +1,6 @@
 ## SEARCHIT: A web application for information retrieval from document collection
 
-**Motivation**: This application has been inspired by search engines which enable us to retrieve information from large set of documents. This application lets you add documents in local folder, take query terms as input and return documents having these query terms. This application is the result of bringing information retrieval and web app at one place.
+**Motivation**: This application has been inspired by search engines which enable us to retrieve information from large document collection. This application lets you add documents in local folder, take query terms as input and retrieve documents which contain those query terms. It retrieves documents for **conjunctive and disjunctive queries**.
 
 ### Technical skills used
 - Django web framework
