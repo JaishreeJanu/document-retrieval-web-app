@@ -2,7 +2,7 @@
 
 **Motivation**: This application has been inspired by search engines which enable us to retrieve information from large document collection. This application lets you add documents in local folder, take query terms as input and retrieve documents which contain those query terms. It retrieves documents for **conjunctive and disjunctive queries**.
 
-### Technical skills used
+### Tech stack
 - Django web framework
 - nltk: Natural language toolkit
 - HTML, javascript
