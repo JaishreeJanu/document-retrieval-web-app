@@ -1,4 +1,4 @@
-## FINDME: A web application for searching across set of documents
+## A web application for searching across set of documents
 
 This application is the result of bringing information retrieval and web app at one place.
 FINDME lets you:

@@ -14,14 +14,15 @@ def model_form_upload(request):
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-        # Whenever a new document is being added, inverted index module is called
+        # Whenever a new document is being added, inverted index built from scratch
         path = os.getcwd() + '/documents/'
         files = os.listdir(path)
+        docID=1
         for filename in files:
-            print(filename)
             text = iv.readfile(path, filename)
-            text = iv.preprocess(text)
-            iv.create_index(text, filename)
+            terms = iv.preprocess(text)
+            iv.create_index(terms, docID)
+            docID += 1
         return redirect('model_form_upload')
     else:
         form = DocumentForm()

@@ -5,21 +5,21 @@ import nltk
 import re
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-nltk.download('stopwords')
-nltk.download('punkt')
-from nltk.stem import PorterStemmer
+from nltk.stem import PorterStemmer, WordNetLemmatizer
 from collections import defaultdict
 import csv
 import json
 from operator import itemgetter
 
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('wordnet')
+
 stop_words = set(stopwords.words('english'))
 stemmer = PorterStemmer()
+wordnet_lemmatizer = WordNetLemmatizer()
 
-#path = os.getcwd() + '/documents/'
 data_path = os.getcwd() + '/search_app/index/'
-#files = os.listdir(path)
-ivdict = {}
 
 class Inverted():
 
@@ -39,26 +39,28 @@ class Inverted():
 
     def preprocess(text):
         '''
-        Preprocesses text.
+        Convert text file into normalized tokens
         Parameters:
-            text (str) : text to preprocessed
+            text (str) : text to be preprocessed
         
         Returns:
             stemmed (str) : Preprocessed text
         '''
         stemmed = []
         text = text.lower()
-        text = re.sub(r'\d+', '', text)
-        text = re.sub(r'[^\w\s]','',text)
-        tokens = word_tokenize(text)
-        text_list = [i for i in tokens if not i in stop_words]
+        text = re.sub(r'\b[0-9]+\b', '', text) # Removes terms containing only numbers
+        tokens = word_tokenize(text) #divides string into lists of substrings
+        text_list = [i for i in tokens if not i in stop_words] # Removing stopwords
         for word in text_list:
-            stemmed_word = (stemmer.stem(word))
+            word = re.sub(r'[^\w\s]','',word) #Removes punctuation characters (except underscore)
+            word = re.sub(r'\_','',word)
+            #stemmed_word = (stemmer.stem(word)) #It takes out the root of the word
+            stemmed_word = wordnet_lemmatizer.lemmatize(word)
             stemmed.append(stemmed_word)
         return stemmed
 
 
-    def create_index(text,docID):
+    def create_index(terms, docID):
         '''
         Creates Inverted Index in Data structure called dictionary and then save it into a json file.
         Term is index and list of lists is stored as values. Each list item in list is combination of docID and frequency of term in docID.
@@ -66,24 +68,21 @@ class Inverted():
             text (str) : text to be indexed in dictionary
             docID (str) : Document Name
         '''
-        for term in text:
+        with open(data_path+'dict.json', 'r') as index:
+            ivdict = json.loads(index.read())
+        for term in terms:
             if term in ivdict:
-                flag=0
-                for i in range(len(ivdict[term])):
-                    if ivdict[term][i][0] == docID:
-                        ivdict[term][i][1] += 1
-                        flag=1
-                        break;
-                if flag == 0:
-                    ivdict[term].append([docID,1])
+                postings_list = [list[0] for list in ivdict[term]]
+                if docID in postings_list:
+                    ivdict[term][docID-1][1] += 1
+                else:
+                    ivdict[term].append([docID,1])         
             else:
-                myList = [[docID,1]]
-                ivdict.update({term : myList })
+                ivdict.update({term : [[docID,1]] })
         
-        js = json.dumps(ivdict)
-        iv = open(data_path+"dict.json","w")
-        iv.write(js)
-        iv.close()
+        index_file = open(data_path+"dict.json","w")
+        index_file.write(json.dumps(ivdict))
+        index_file.close()
         return
 
     def search(query):
